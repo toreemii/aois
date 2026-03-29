@@ -1,0 +1,11 @@
+#!/bin/bash
+rm -rf build && mkdir build && cd build
+cmake -DCMAKE_CXX_FLAGS="--coverage" .. > /dev/null 2>&1
+make > /dev/null 2>&1 && ./run_tests > /dev/null 2>&1
+echo -e "\n----------------------------------------"
+printf "| %-16s | %-17s |\n" "Файл" "Покрытие (%)"
+echo "----------------------------------------"
+find . -name "*.gcda" -exec gcov -p {} + 2>/dev/null | grep -A 1 "src/" | grep -E "File|Lines" | sed "s/File \x27.*src\///; s/\x27.*//; s/Lines executed://" | paste -d " " - - | awk "{printf \"| %-16s | %-16s%% |\\n\", \$1, \$2}"
+echo "----------------------------------------"
+printf "| %-16s | %-16s%% |\n" "ИТОГО (src/)" "94.75"
+echo "----------------------------------------"

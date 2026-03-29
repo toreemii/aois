@@ -1,0 +1,31 @@
+        -:    0:Source:/home/vika/Рабочий стол/sem2/aois/lab2/tests/test_logic.cpp
+        -:    1:#include "../include/table.h"
+        -:    2:#include "../include/opz.h"
+        -:    3:#include "../include/exceptions.h"
+        -:    4:#include <iostream>
+        -:    5:#include <string>
+        -:    6:#include <map>
+        -:    7:
+       19:    8:void safe_run(std::string expr, int mode = 3) {
+        -:    9:    try {
+       19:   10:        Table::generate(expr, mode);
+        4:   11:    } catch (...) {}
+       19:   12:}
+        -:   13:
+        1:   14:int main() {
+        2:   15:    safe_run("!(a & b) | (c ~ d) -> e"); 
+        2:   16:    safe_run("a->b");
+        1:   17:    std::string formula = "a & b | !c";
+       11:   18:    for(int i = 3; i <= 12; i++) {
+       10:   19:        safe_run(formula, i);
+        -:   20:    }
+        2:   21:    safe_run("(a&b))");      
+        2:   22:    safe_run("((a&b)");      
+        2:   23:    safe_run("a & b (");     
+        2:   24:    safe_run("a & b &");     
+        2:   25:    safe_run("!");           
+        2:   26:    safe_run("!a&b");
+        1:   27:    safe_run("a|b~c");
+        -:   28:
+        1:   29:    return 0;
+        1:   30:}

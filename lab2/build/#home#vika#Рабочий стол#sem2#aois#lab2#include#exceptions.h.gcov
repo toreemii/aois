@@ -1,0 +1,35 @@
+        -:    0:Source:/home/vika/Рабочий стол/sem2/aois/lab2/include/exceptions.h
+        -:    1:#include <stdexcept>
+        -:    2:#include <string>
+        -:    3:
+        -:    4:class LogicalError : public std::runtime_error
+        -:    5:{
+        -:    6:public:
+       4*:    7:    LogicalError(const std::string &msg) : std::runtime_error(msg) {}
+------------------
+_ZN12LogicalErrorC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE:
+        4:    7:    LogicalError(const std::string &msg) : std::runtime_error(msg) {}
+------------------
+_ZN12LogicalErrorC2ERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE:
+    #####:    7:    LogicalError(const std::string &msg) : std::runtime_error(msg) {}
+------------------
+        -:    8:};
+        -:    9:
+        -:   10:class InvalidSymbol : public LogicalError
+        -:   11:{
+        -:   12:public:
+    #####:   13:    InvalidSymbol(char c) : LogicalError("Oшибка: символ '" + std::string(1, c) + "' запрещен!") {}
+        -:   14:};
+        -:   15:
+        -:   16:class BracketError : public LogicalError
+        -:   17:{
+        -:   18:public:
+       9*:   19:    BracketError() : LogicalError("Oшибка: проверьте скобки!") {}
+------------------
+_ZN12BracketErrorC2Ev:
+        9:   19:    BracketError() : LogicalError("Oшибка: проверьте скобки!") {}
+------------------
+_ZN12BracketErrorC2Ev:
+    #####:   19:    BracketError() : LogicalError("Oшибка: проверьте скобки!") {}
+------------------
+        -:   20:};

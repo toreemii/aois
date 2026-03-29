@@ -1,0 +1,103 @@
+        -:    0:Source:/home/vika/Рабочий стол/sem2/aois/lab2/src/opz.cpp
+        -:    1:#include "../include/opz.h"
+        -:    2:#include "../include/exceptions.h"
+        -:    3:#include <stack>
+        -:    4:
+       54:    5:int OPZ::getPriority(char op)
+        -:    6:{
+       54:    7:    if (op == '!')
+       12:    8:        return 4;
+       42:    9:    if (op == '&')
+       14:   10:        return 3;
+       28:   11:    if (op == '|')
+       23:   12:        return 2;
+        5:   13:    if (op == '>' || op == '~')
+        3:   14:        return 1;
+        2:   15:    return 0;
+        -:   16:}
+        -:   17:
+       16:   18:std::string OPZ::toPostfix(const std::string &infix)
+        -:   19:{
+       16:   20:    std::string postfix = "";
+       16:   21:    std::stack<char> s;
+        -:   22:
+      107:   23:    for (char c : infix)
+        -:   24:    {
+       91:   25:        if (c >= 'a' && c <= 'e')
+        -:   26:        {
+       44:   27:            postfix += c;
+        -:   28:        }
+       47:   29:        else if (c == '(')
+        -:   30:        {
+        2:   31:            s.push(c);
+        -:   32:        }
+       45:   33:        else if (c == ')')
+        -:   34:        {
+        4:   35:            while (!s.empty() && s.top() != '(')
+        -:   36:            {
+        2:   37:                postfix += s.top();
+        2:   38:                s.pop();
+        -:   39:            }
+        2:   40:            if (s.empty())
+    #####:   41:                throw BracketError();
+        2:   42:            s.pop();
+        -:   43:        }
+        -:   44:        else
+        -:   45:        {
+       58:   46:            while (!s.empty() && getPriority(s.top()) >= getPriority(c))
+        -:   47:            {
+      15*:   48:                if (c == '!' && s.top() == '!')
+    #####:   49:                    break;
+       15:   50:                postfix += s.top();
+       15:   51:                s.pop();
+        -:   52:            }
+       43:   53:            s.push(c);
+        -:   54:        }
+        -:   55:    }
+       42:   56:    while (!s.empty())
+        -:   57:    {
+       26:   58:        if (s.top() == '(')
+    #####:   59:            throw BracketError();
+       26:   60:        postfix += s.top();
+       26:   61:        s.pop();
+        -:   62:    }
+       32:   63:    return postfix;
+       16:   64:}
+        -:   65:
+      132:   66:bool OPZ::evaluate(const std::string &postfix, std::map<char, bool> &values)
+        -:   67:{
+      132:   68:    std::stack<bool> s;
+     1012:   69:    for (char c : postfix)
+        -:   70:    {
+      884:   71:        if (c >= 'a' && c <= 'e')
+        -:   72:        {
+      448:   73:            s.push(values[c]);
+        -:   74:        }
+      436:   75:        else if (c == '!')
+        -:   76:        {
+      116:   77:            if (s.empty())
+       4*:   78:                return false;
+      116:   79:            bool v = s.top();
+      116:   80:            s.pop();
+      116:   81:            s.push(!v);
+        -:   82:        }
+        -:   83:        else
+        -:   84:        {
+      320:   85:            if (s.size() < 2)
+        4:   86:                return false;
+      316:   87:            bool v2 = s.top();
+      316:   88:            s.pop();
+      316:   89:            bool v1 = s.top();
+      316:   90:            s.pop();
+      316:   91:            if (c == '&')
+      120:   92:                s.push(v1 && v2);
+      196:   93:            else if (c == '|')
+      120:   94:                s.push(v1 || v2);
+       76:   95:            else if (c == '>')
+       36:   96:                s.push(!v1 || v2);
+       40:   97:            else if (c == '~')
+       40:   98:                s.push(v1 == v2);
+        -:   99:        }
+        -:  100:    }
+     128*:  101:    return s.empty() ? false : s.top();
+      132:  102:}
