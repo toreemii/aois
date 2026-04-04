@@ -217,17 +217,21 @@ std::string NormalForms::vectorToTableString(const std::vector<bool> &vec)
     return s + "]";
 }
 
-std::string NormalForms::getMinimizedQuine(const std::vector<char> &vars, const std::vector<int> &ones_i)
+std::string NormalForms::getMinimizedQuine(const std::vector<char> &vars, const std::vector<int> &targets, bool isSop)
 {
     int n = vars.size();
+    if (targets.empty())
+        return isSop ? "0" : "1";
+
     std::set<Implicant> current;
-    for (int idx : ones_i)
+    for (int idx : targets)
     {
         Implicant imp;
         for (int i = n - 1; i >= 0; i--)
             imp.bits.push_back((idx >> i) & 1);
         current.insert(imp);
     }
+
     std::set<Implicant> primes;
     while (!current.empty())
     {
@@ -259,32 +263,50 @@ std::string NormalForms::getMinimizedQuine(const std::vector<char> &vars, const 
                 primes.insert(v[i]);
         current = next;
     }
+
     std::string res = "";
     for (auto &im : primes)
     {
         if (!res.empty())
-            res += " v ";
+            res += (isSop ? " v " : " & ");
         res += "(";
+        bool first = true;
         for (int i = 0; i < n; i++)
         {
             if (im.bits[i] != -1)
             {
-                if (im.bits[i] == 0)
-                    res += "!";
+                if (!first)
+                    res += (isSop ? "&" : "|");
+                if (isSop)
+                {
+                    if (im.bits[i] == 0)
+                        res += "!";
+                }
+                else
+                {
+                    if (im.bits[i] == 1)
+                        res += "!";
+                }
                 res += vars[i];
+                first = false;
             }
         }
         res += ")";
     }
-    return res.empty() ? "0" : res;
+    return res;
 }
 
-void NormalForms::getQuineMcCluskeyTable(const std::vector<char> &vars, const std::vector<int> &ones_i)
+void NormalForms::getQuineMcCluskeyTable(const std::vector<char> &vars, const std::vector<int> &targets, std::string label)
 {
     int n = vars.size();
+    if (targets.empty())
+    {
+        std::cout << "\nТаблица (" << label << ") пуста.\n";
+        return;
+    }
 
     std::set<Implicant> current;
-    for (int idx : ones_i)
+    for (int idx : targets)
     {
         Implicant imp;
         for (int i = n - 1; i >= 0; i--)
@@ -324,21 +346,20 @@ void NormalForms::getQuineMcCluskeyTable(const std::vector<char> &vars, const st
         current = next;
     }
 
-    std::cout << "\nТаблица покрытия импликантами:\n";
-    std::cout << std::setw(10) << "Импл. \\ Набор | ";
-    for (int idx : ones_i)
+    std::cout << "\nТаблица покрытия (" << label << "):\n";
+    std::cout << std::setw(12) << "Импл. \\ Наб | ";
+    for (int idx : targets)
         std::cout << std::setw(3) << idx << " ";
     std::cout << "\n"
-              << std::string(15 + ones_i.size() * 4, '-') << "\n";
+              << std::string(15 + targets.size() * 4, '-') << "\n";
 
     for (auto &im : primes)
     {
         std::string s_im = "";
         for (int b : im.bits)
             s_im += (b == -1 ? "-" : std::to_string(b));
-        std::cout << std::setw(13) << s_im << " | ";
-
-        for (int idx : ones_i)
+        std::cout << std::setw(12) << s_im << " | ";
+        for (int idx : targets)
         {
             bool covers = true;
             for (int k = 0; k < n; k++)
@@ -360,18 +381,16 @@ void NormalForms::printKarnaughMap(const std::vector<bool> &results, const std::
 {
     int n = vars.size();
     int gray[] = {0, 1, 3, 2};
+    std::cout << "\nКарта Карно (0 и 1):\n";
 
     if (n == 2)
-    { 
-        std::cout << "   b\\a | 0 | 1 |\n";
-        std::cout << "  -------------\n";
+    {
+        std::cout << "  b\\a | 0 | 1 |\n  -------------\n";
         for (int b = 0; b < 2; b++)
         {
-            std::cout << "   " << b << "   | ";
+            std::cout << "   " << b << "  | ";
             for (int a = 0; a < 2; a++)
-            {
                 std::cout << results[(a << 1) | b] << " | ";
-            }
             std::cout << "\n";
         }
     }
@@ -406,7 +425,5 @@ void NormalForms::printKarnaughMap(const std::vector<bool> &results, const std::
         }
     }
     else
-    {
-        std::cout << "Карта Карно доступна для 3 или 4 переменных.\n";
-    }
+        std::cout << "Карта Карно доступна для 2, 3 или 4 переменных.\n";
 }
