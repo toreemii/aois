@@ -1,6 +1,0 @@
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/logic_lib.dir
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/main.dir
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/run_tests.dir
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/coverage.dir
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/edit_cache.dir
-/home/vika/Рабочий стол/sem2/aois/lab2/build/CMakeFiles/rebuild_cache.dir

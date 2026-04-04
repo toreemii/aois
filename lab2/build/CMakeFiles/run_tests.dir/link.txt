@@ -1,1 +1,0 @@
-/usr/bin/c++ --coverage --coverage -g -O0  --coverage -Wl,--dependency-file=CMakeFiles/run_tests.dir/link.d CMakeFiles/run_tests.dir/tests/test_logic.cpp.o -o run_tests  liblogic_lib.a
